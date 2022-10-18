@@ -21,13 +21,24 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 
-    <androidx.recyclerview.widget.RecyclerView
+    <!--<androidx.recyclerview.widget.RecyclerView
         app:layout_constraintTop_toBottomOf="@+id/tvSecond"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/allAppRecyclerView"
         tools:listitem="@layout/all_app_row"
-        />
+        />-->
+    <FrameLayout
+        android:id="@+id/frame_container"
+        app:layout_constraintTop_toBottomOf="@+id/tvSecond"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+       <!-- <androidx.fragment.app.FragmentContainerView
+            android:id="@+id/details_fragment"
+            class="com.alept.exampletwo.activities.LoadListFragmen"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>-->
+    </FrameLayout>
    <!-- <fragment
         android:id="@+id/details_fragment"
         class="com.alept.exampletwo.activities.LoadListFragmen"

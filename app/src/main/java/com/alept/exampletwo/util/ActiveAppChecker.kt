@@ -6,9 +6,14 @@ import android.util.Log
 import android.view.accessibility.AccessibilityEvent
 import android.widget.Toast
 import androidx.core.app.ActivityCompat.finishAffinity
+import com.alept.exampletwo.MyApplication
+import com.alept.exampletwo.activities.AllAppsActivity
 import com.alept.exampletwo.activities.YouAreBlocked
 import com.alept.exampletwo.database.AllAppsTable
 import com.alept.exampletwo.database.AppDatabase
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import kotlin.concurrent.thread
 import kotlin.properties.Delegates
 
@@ -39,63 +44,53 @@ class ActiveAppChecker : AccessibilityService() {
         )*/
         Log.e(
             TAG,
-            "------>Time Start first,${SharePreferences.REMAINING_TIME}")
+            "------>Time Start first,${MyApplication().REMAINING_TIME}")
         Log.e(
             TAG,
             "------>Time Start ${SharePreferences(this).getString(SharePreferences.ALLOWED_TIME)}")
+        MyApplication().REMAINING_TIME =SharePreferences(this).getString(SharePreferences.ALLOWED_TIME).toInt()
 
-        SharePreferences.REMAINING_TIME =SharePreferences(this).getString(SharePreferences.ALLOWED_TIME).toInt()
-        thread {
+        GlobalScope.launch(Dispatchers.IO){
             allAppsTable = appDatabase.AppDao().getApps()
 
-            when (SharePreferences.REMAINING_TIME) {
-                1 -> {
-                    isBlock = false
-                    for (i in allAppsTable) {
-                        if (runningPackName.contains(i.packageName)) {
-                            if (i.isBlocked == 1) {
-                                Log.e(TAG, "--Inside ${i.isBlocked}${i.packageName}")
-                                blockApp(i.packageName, i.appName)
+            launch(Dispatchers.Main){
+                when (MyApplication().REMAINING_TIME) {
+                    1 -> {
+                        isBlock = false
+                        for (i in allAppsTable) {
+                            if (runningPackName.contains(i.packageName)) {
+                                if (i.isBlocked == 1) {
+                                    Log.e(TAG, "--Inside ${i.isBlocked}${i.packageName}")
+                                    blockApp(i.packageName, i.appName)
+                                }
                             }
                         }
                     }
-                }
-                0 -> {
-                    isBlock = true
-                    Log.e(
-                        TAG,
-                        "------>Time Start ${SharePreferences(this).getString(SharePreferences.ALLOWED_TIME)}")
-                }
-                2 -> {
+                    0 -> {
+                        isBlock = true
+                        Log.e(TAG, "------>Time Start ${SharePreferences(applicationContext).getString(SharePreferences.ALLOWED_TIME)}")
+                    }
+                    2 -> {
 
-                   // blockApp("i.packageName", "i.appName")
-                    Log.e(
-                        TAG,
-                        "------>Time Start ${SharePreferences(this).getString(SharePreferences.ALLOWED_TIME)}")
-                    for (i in allAppsTable) {
-                        if (runningPackName.contains(i.packageName)) {
-                            if (i.isBlocked == 1) {
-                                Log.e(TAG, "--Inside ${i.isBlocked}${i.packageName}")
-                                blockApp(i.packageName, i.appName)
+                        // blockApp("i.packageName", "i.appName")
+                        Log.e(
+                            TAG,
+                            "------>Time Start ${SharePreferences(applicationContext).getString(SharePreferences.ALLOWED_TIME)}")
+                        for (i in allAppsTable) {
+                            if (runningPackName.contains(i.packageName)) {
+                                if (i.isBlocked == 1) {
+                                    Log.e(TAG, "--Inside ${i.isBlocked}${i.packageName}")
+                                    blockApp(i.packageName, i.appName)
+                                }
                             }
                         }
                     }
+
                 }
-
-
             }
-
-            /* if (isBlock) {
-
-             } else if(!isBlock ) {
-
-             }*/
-
-
-            // checking if running app is blocked in the database
-
-
         }
+        /*thread {
+        }*/
     }
 
     // method called for showing the block screen

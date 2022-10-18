@@ -16,7 +16,7 @@ class SharePreferences(appContext: Context) {
         const val IS_ALLOWED_TIME = false
         const val ALLOWED_TIME = ""
         const val DEFAULT_ALLOWED_TIME = 10
-        var REMAINING_TIME = 2
+
         var Count = 0
 
     }

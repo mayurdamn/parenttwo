@@ -9,6 +9,7 @@ import android.widget.EditText
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import com.alept.exampletwo.MyApplication
 import com.alept.exampletwo.R
 import com.alept.exampletwo.util.SharePreferences
 import java.util.concurrent.TimeUnit
@@ -52,7 +53,7 @@ class BlockedScreen : AppCompatActivity() {
                 //startTimer(tvSecond, mEditText.text.toString().toInt())
                // SharePreferences(this).putBoolean(SharePreferences.ALLOWED_TIME, false)
                 timeValue = mEditText.text.toString()
-                SharePreferences.REMAINING_TIME = 0
+                MyApplication().REMAINING_TIME = 0
                 SharePreferences(this).putString(SharePreferences.ALLOWED_TIME, "0")
                 setBackResult()
             }
@@ -61,13 +62,13 @@ class BlockedScreen : AppCompatActivity() {
         buttonStop.setOnClickListener {
             // sendBroadCast("0")
             countDownTimer.cancel()
-            //SharePreferences(this).putBoolean(SharePreferences.ALLOWED_TIME, true)
-            SharePreferences.REMAINING_TIME = 1
+            //MyApplication()(this).putBoolean(MyApplication().ALLOWED_TIME, true)
+            MyApplication().REMAINING_TIME = 1
         }
         buttonClose.setOnClickListener {
             // sendBroadCast("0")
-           // SharePreferences(this).putBoolean(SharePreferences.ALLOWED_TIME, true)
-            SharePreferences.REMAINING_TIME = 0
+           // MyApplication()(this).putBoolean(MyApplication().ALLOWED_TIME, true)
+            MyApplication().REMAINING_TIME = 0
             finish();
         }
     }

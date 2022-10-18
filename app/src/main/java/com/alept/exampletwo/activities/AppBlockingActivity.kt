@@ -3,40 +3,47 @@ package com.alept.exampletwo.activities
 import android.graphics.Bitmap
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import com.alept.exampletwo.MyApplication
 import com.alept.exampletwo.database.AllAppsTable
 import com.alept.exampletwo.database.AppDatabase
 import com.alept.exampletwo.databinding.ActivityAppBlockingBinding
 import com.alept.exampletwo.util.SharePreferences
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import kotlin.concurrent.thread
 
 class AppBlockingActivity : AppCompatActivity() {
     lateinit var binding: ActivityAppBlockingBinding
     lateinit var appDatabase: AppDatabase
     lateinit var appsTable: List<AllAppsTable>
+    var appName :String=""
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityAppBlockingBinding.inflate(layoutInflater)
         val veiw = binding.root
         setContentView(veiw)
         appDatabase = AppDatabase.getInstance(this)!!
-        val appName = intent.getStringExtra("name")
+         appName = intent.getStringExtra("name")!!
         val appPackage = intent.getStringExtra("package")
         val icon = intent.getParcelableExtra<Bitmap>("icon")
         binding.appName.text = appName
         binding.appIcon.setImageBitmap(icon)
         // checking if the app is already blocked or not
-        thread {
-            appsTable = appDatabase.AppDao().checkApp(appName!!)
+
+       /* thread {
+
             runOnUiThread {
-                if (appsTable.isNotEmpty()){
-                    binding.blockChip.isChecked = appsTable[0].isBlocked == 1
-                }
+
             }
-        }
+        }*/
         //adding the app to the block list if its not blocked already and removing if its blocked using switch
         binding.blockChip.setOnCheckedChangeListener { _, b ->
             if (b) {
+                MyApplication().REMAINING_TIME=1
+                SharePreferences(this).putString(SharePreferences.ALLOWED_TIME,"1")
                 thread {
+
                     if (appsTable.isEmpty() && ::appsTable.isInitialized) {
                         appDatabase.AppDao().setBlockedApp(AllAppsTable(appName!!, appPackage!!, 1))
 
@@ -52,8 +59,7 @@ class AppBlockingActivity : AppCompatActivity() {
                         )
                     }
                 }
-                SharePreferences.REMAINING_TIME=1
-                SharePreferences(this).putString(SharePreferences.ALLOWED_TIME,"1")
+
                 SharePreferences(this).putString(appName,appPackage)
 
             } else {
@@ -77,6 +83,20 @@ class AppBlockingActivity : AppCompatActivity() {
             }else{
                 SharePreferences(this).putBoolean(SharePreferences.ALLOWED_TIME,false)
             }
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        GlobalScope.launch(Dispatchers.IO){
+            appsTable = appDatabase.AppDao().checkApp(appName!!)
+            launch(Dispatchers.Main){
+
+                if (appsTable.isNotEmpty()){
+                    binding.blockChip.isChecked = appsTable[0].isBlocked == 1
+                }
+            }
+
         }
     }
 }

@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools">
     <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES" />
     <application
+        android:name=".MyApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -19,7 +20,7 @@
             android:exported="true"
             android:launchMode="singleTop"
             android:name=".activities.YouAreBlocked"
-            android:taskAffinity="com.blocked"
+
             >
 
         </activity>
@@ -32,7 +33,6 @@
             android:name=".activities.AppBlockingActivity"
             android:exported="false" />
         <activity
-
             android:excludeFromRecents="false"
             android:name=".activities.AllAppsActivity"
             android:exported="true" >

@@ -10,6 +10,10 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.alept.exampletwo.adapter.AllAppsAdapter
 import com.alept.exampletwo.databinding.LoadlistFragmentBinding
+import com.alept.exampletwo.util.runOnUiThread
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import kotlin.concurrent.thread
 
 
@@ -28,10 +32,7 @@ class LoadListFragmen :Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.allAppRecyclerView.layoutManager = LinearLayoutManager(requireContext())
-
-        thread {
-
-            // getting list of all the installed apps apart from this app
+        GlobalScope.launch(Dispatchers.IO) {
             val strings = ArrayList<String>()
             val drawables = ArrayList<Drawable>()
             val packages = ArrayList<String>()
@@ -39,9 +40,7 @@ class LoadListFragmen :Fragment() {
             val apps: List<ApplicationInfo> = requireContext().packageManager.getInstalledApplications(0)
             for (app in apps) {
                 if (requireContext().packageManager
-                        .getLaunchIntentForPackage(app.packageName) != null && !app.packageName.contains(
-                        "com.example.parentalcontrol"
-                    )
+                        .getLaunchIntentForPackage(app.packageName) != null
                 ) {
                     strings.add(i, requireContext().packageManager.getApplicationLabel(app).toString())
                     drawables.add(i,requireContext(). packageManager.getApplicationIcon(app))
@@ -66,9 +65,10 @@ class LoadListFragmen :Fragment() {
                     packages[j1] = tempPck
                 }
             }
-            binding.allAppRecyclerView.adapter =
-                AllAppsAdapter(requireContext(), strings, drawables, packages)
-
+            launch(Dispatchers.Main) {
+                binding.allAppRecyclerView.adapter =
+                    AllAppsAdapter(requireContext(), strings, drawables, packages)
+            }
         }
 
     }

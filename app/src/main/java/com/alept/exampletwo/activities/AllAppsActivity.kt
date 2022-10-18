@@ -3,8 +3,6 @@ package com.alept.exampletwo.activities
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
-import android.content.pm.ApplicationInfo
-import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.provider.Settings
@@ -12,40 +10,31 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import androidx.activity.result.ActivityResult
-import androidx.activity.result.ActivityResultCallback
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.appcompat.app.AppCompatActivity
-import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentTransaction
+import com.alept.exampletwo.MyApplication
 import com.alept.exampletwo.R
-import com.alept.exampletwo.adapter.AllAppsAdapter
 import com.alept.exampletwo.databinding.ActivityAllAppsBinding
 import com.alept.exampletwo.util.SharePreferences
 import java.util.concurrent.TimeUnit
-import kotlin.concurrent.thread
 
 
 class AllAppsActivity : AppCompatActivity() {
     lateinit var binding: ActivityAllAppsBinding
     private lateinit var countDownTimer: CountDownTimer
+    var  fragment =Fragment();
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityAllAppsBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
-
-        when(SharePreferences(this).getString(SharePreferences.ALLOWED_TIME)){
-            "0"->{SharePreferences.REMAINING_TIME =0}
-            "1"->{SharePreferences.REMAINING_TIME =1}
-            "2"->{SharePreferences.REMAINING_TIME =2}
-
-        }
-
-
+        fragment= LoadListFragmen()
         checkPermissionFromUser()
-        binding.allAppRecyclerView.layoutManager = LinearLayoutManager(this)
-        thread {
+       // binding.allAppRecyclerView.layoutManager = LinearLayoutManager(this)
+       /* thread {
             // getting list of all the installed apps apart from this app
             val strings = ArrayList<String>()
             val drawables = ArrayList<Drawable>()
@@ -53,16 +42,17 @@ class AllAppsActivity : AppCompatActivity() {
             var i = 0
             val apps: List<ApplicationInfo> = packageManager.getInstalledApplications(0)
             for (app in apps) {
-                if (packageManager
+               *//* if (packageManager
                         .getLaunchIntentForPackage(app.packageName) != null && !app.packageName.contains(
                         "com.alept.exampletwo"
                     )
                 ) {
-                    strings.add(i, packageManager.getApplicationLabel(app).toString())
-                    drawables.add(i, packageManager.getApplicationIcon(app))
-                    packages.add(app.packageName)
-                    i++
-                }
+
+                }*//*
+                strings.add(i, packageManager.getApplicationLabel(app).toString())
+                drawables.add(i, packageManager.getApplicationIcon(app))
+                packages.add(app.packageName)
+                i++
             }
             // making three arrays for passing to the adapter
             for (i1 in strings.indices) for (j1 in i1 + 1 until strings.size) {
@@ -86,10 +76,13 @@ class AllAppsActivity : AppCompatActivity() {
                 binding.allAppRecyclerView.adapter =
                     AllAppsAdapter(this, strings, drawables, packages)
             }
-        }
+
+        }*/
 
 
     }
+
+
 
     private fun checkPermissionFromUser() {
         val prefs = getSharedPreferences("first", MODE_PRIVATE)
@@ -101,8 +94,33 @@ class AllAppsActivity : AppCompatActivity() {
             editor.apply()
         }
 
-
     }
+
+    override fun onResume() {
+        when(SharePreferences(this).getString(SharePreferences.ALLOWED_TIME)){
+            "0"->{MyApplication().REMAINING_TIME =0}
+            "1"->{MyApplication().REMAINING_TIME =1}
+            "2"->{MyApplication().REMAINING_TIME =2}
+            else->{
+                MyApplication().REMAINING_TIME =2
+                SharePreferences(this).putString(SharePreferences.ALLOWED_TIME,MyApplication().REMAINING_TIME.toString())
+            }
+        }
+
+        loadFragment(fragment)
+        super.onResume()
+    }
+
+
+
+    private fun loadFragment(fragment: Fragment) {
+        var transaction: FragmentTransaction = supportFragmentManager.beginTransaction()
+        transaction.replace(R.id.frame_container,fragment)
+        transaction.addToBackStack(null);
+        transaction.commit();
+    }
+
+
 
     // to show the plus icon to redirect time screen
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -132,7 +150,7 @@ class AllAppsActivity : AppCompatActivity() {
             val data: Intent? = result.data
             Log.d("data", data?.getStringExtra("valueTimer").toString())
             val timeInt = data?.getStringExtra("valueTimer").toString().toInt()
-            SharePreferences.REMAINING_TIME = 0
+            MyApplication().REMAINING_TIME = 0
             SharePreferences(this).putString(SharePreferences.ALLOWED_TIME, "0")
             startTimer(timeInt)
 
@@ -184,7 +202,7 @@ class AllAppsActivity : AppCompatActivity() {
             override fun onFinish() {
                 binding.tvSecond.text = ""
                 binding.tvSecond.visibility = View.GONE
-                SharePreferences.REMAINING_TIME = 1
+                MyApplication().REMAINING_TIME = 1
                 SharePreferences(this@AllAppsActivity).putString(SharePreferences.ALLOWED_TIME, "1")
 
                 /*finish()
@@ -197,6 +215,11 @@ class AllAppsActivity : AppCompatActivity() {
             }
         }
         countDownTimer.start()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+
     }
 
 }
