@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">Parental2 Control</string>
+    <string name="add_app">App App</string>
+    <string name="databaseName">parentalControls</string>
+    <string name="parentalcontrol">Example2</string>
+    <string name="parentalcontrolservice">This app is providing you with a very useful feature that you can use to stop your kids from accessing the app that you don\'t want them to so please don\'t be worried when turning this button on this app is completely safe and we do not collect or send any user data to any third party</string>
+    <string name="ok">Ok</string>
+    <string name="cancel">Cancel</string>
+    <string name="alerttitle">Accessibility Service</string>
+    <string name="perminfo">Allow this permission for us to give app actions</string>
+</resources>

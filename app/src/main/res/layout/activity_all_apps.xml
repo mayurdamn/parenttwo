@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activities.AllAppsActivity">
+
+
+    <TextView
+        android:visibility="gone"
+        android:padding="@dimen/_4sdp"
+        android:layout_marginTop="@dimen/_10sdp"
+        android:id="@+id/tvSecond"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:textSize="@dimen/_30sdp"
+        android:textColor="@color/black"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        app:layout_constraintTop_toBottomOf="@+id/tvSecond"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/allAppRecyclerView"
+        tools:listitem="@layout/all_app_row"
+        />
+   <!-- <fragment
+        android:id="@+id/details_fragment"
+        class="com.alept.exampletwo.activities.LoadListFragmen"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>-->
+</androidx.constraintlayout.widget.ConstraintLayout>
