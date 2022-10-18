@@ -13,11 +13,14 @@ interface AppDao {
     @Query("SELECT * FROM appsTables")
     fun getApps() : List<AllAppsTable>
 
+    @Query("SELECT * FROM appsTimer")
+    fun getTimerValue() : List<AddTimer>
+
     @Insert(onConflict = ABORT)
     fun setBlockedApp(allAppsTable: AllAppsTable)
 
     @Insert(onConflict = ABORT)
-    fun setIsBlock(allAppsTable: AllAppsTable)
+    fun setIsBlock(addTimer: AddTimer)
 
     @Update
     fun updateBlockedApp(allAppsTable: AllAppsTable)

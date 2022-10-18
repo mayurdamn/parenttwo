@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.alept.exampletwo.MyApplication
 import com.alept.exampletwo.R
+import com.alept.exampletwo.database.AddTimer
 import com.alept.exampletwo.database.AllAppsTable
 import com.alept.exampletwo.database.AppDatabase
 import com.alept.exampletwo.util.SharePreferences
@@ -29,7 +30,7 @@ class BlockedScreen : AppCompatActivity() {
     lateinit var tvBlockUnblock: TextView
     var timeValue :String =""
     lateinit var appDatabase: AppDatabase
-    lateinit var appsTable: List<AllAppsTable>
+    lateinit var addTimer: List<AddTimer>
     private lateinit var localBroadcastManager: LocalBroadcastManager
     private lateinit var countDownTimer: CountDownTimer
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -51,10 +52,10 @@ class BlockedScreen : AppCompatActivity() {
         tvBlockUnblock = findViewById(R.id.tvBlockUnblock)
 
         GlobalScope.launch(Dispatchers.IO){
-            appsTable = appDatabase.AppDao().getApps()
+            addTimer = appDatabase.AppDao().getTimerValue()
             launch(Dispatchers.Main){
 
-                if (appsTable.isNotEmpty()){
+                if (addTimer.isNotEmpty()){
 
                 }
             }
@@ -71,11 +72,11 @@ class BlockedScreen : AppCompatActivity() {
                 SharePreferences(this).putString(SharePreferences.ALLOWED_TIME, "0")
 
                 GlobalScope.launch(Dispatchers.IO){
-                    if (appsTable.isEmpty() && ::appsTable.isInitialized) {
-                        appDatabase.AppDao().setIsBlock(AllAppsTable(""!!, ""!!, 0,0))
+                    if (addTimer.isEmpty() && ::addTimer.isInitialized) {
+                        appDatabase.AppDao().setIsBlock(AddTimer(0,0))
 
                     } else {
-                        appDatabase.AppDao().setIsBlock(AllAppsTable(""!!, ""!!, 0,0))
+                        appDatabase.AppDao().setIsBlock(AddTimer( 0,0))
                     }
                 }
                 setBackResult()

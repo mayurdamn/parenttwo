@@ -16,6 +16,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import com.alept.exampletwo.MyApplication
 import com.alept.exampletwo.R
+import com.alept.exampletwo.database.AddTimer
 import com.alept.exampletwo.database.AllAppsTable
 import com.alept.exampletwo.database.AppDatabase
 import com.alept.exampletwo.databinding.ActivityAllAppsBinding
@@ -32,6 +33,7 @@ class AllAppsActivity : AppCompatActivity() {
     var  fragment =Fragment();
     lateinit var appDatabase: AppDatabase
     lateinit var appsTable: List<AllAppsTable>
+    lateinit var addTimer: List<AddTimer>
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityAllAppsBinding.inflate(layoutInflater)
@@ -87,6 +89,7 @@ class AllAppsActivity : AppCompatActivity() {
         }*/
         GlobalScope.launch(Dispatchers.IO){
             appsTable = appDatabase.AppDao().getApps()
+            addTimer = appDatabase.AppDao().getTimerValue()
             launch(Dispatchers.Main){
 
                 if (appsTable.isNotEmpty()){
@@ -216,6 +219,17 @@ class AllAppsActivity : AppCompatActivity() {
             }
 
             override fun onFinish() {
+                GlobalScope.launch(Dispatchers.IO){
+                    if (addTimer.isEmpty() && ::addTimer.isInitialized) {
+                        appDatabase.AppDao().setIsBlock(AddTimer(0,1))
+
+
+                    } else {
+                        appDatabase.AppDao().setIsBlock(AddTimer(0,1))
+
+                    }
+                }
+
                 binding.tvSecond.text = ""
                 binding.tvSecond.visibility = View.GONE
                 MyApplication().REMAINING_TIME = 1
@@ -228,15 +242,7 @@ class AllAppsActivity : AppCompatActivity() {
                         YouAreBlocked::class.java
                     ).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 )*/
-                GlobalScope.launch(Dispatchers.IO){
-                    if (appsTable.isEmpty() && ::appsTable.isInitialized) {
-                        appDatabase.AppDao().setIsBlock(AllAppsTable(""!!, ""!!, 0,1))
 
-                    } else {
-                        appDatabase.AppDao().setIsBlock(AllAppsTable(""!!, ""!!, 0,1))
-
-                    }
-                }
             }
         }
         countDownTimer.start()

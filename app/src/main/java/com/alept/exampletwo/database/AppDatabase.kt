@@ -7,7 +7,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.alept.exampletwo.R
 
-@Database(entities = [AllAppsTable::class], version = 1, exportSchema = false)
+@Database(entities = [AllAppsTable::class,AddTimer::class], version = 1, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun AppDao(): AppDao
