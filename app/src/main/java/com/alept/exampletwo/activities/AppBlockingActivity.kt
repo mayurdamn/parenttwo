@@ -54,7 +54,7 @@ class AppBlockingActivity : AppCompatActivity() {
                                 appsTable[0].id,
                                 appName!!,
                                 appPackage!!,
-                                1
+                                1,
                             )
                         )
                     }
@@ -70,7 +70,7 @@ class AppBlockingActivity : AppCompatActivity() {
                     }
                     if (appName != null) {
                         binding.blockChip1.isChecked=false
-                        SharePreferences(this).removeBadKeys(appName)
+                        //SharePreferences(this).removeBadKeys(appName)
                         SharePreferences(this).putBoolean(SharePreferences.ALLOWED_TIME,false)
                     }
                 }

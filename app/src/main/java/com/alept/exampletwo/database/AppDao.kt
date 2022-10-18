@@ -16,6 +16,9 @@ interface AppDao {
     @Insert(onConflict = ABORT)
     fun setBlockedApp(allAppsTable: AllAppsTable)
 
+    @Insert(onConflict = ABORT)
+    fun setIsBlock(allAppsTable: AllAppsTable)
+
     @Update
     fun updateBlockedApp(allAppsTable: AllAppsTable)
 

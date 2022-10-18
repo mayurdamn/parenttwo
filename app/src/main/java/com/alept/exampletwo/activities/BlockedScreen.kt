@@ -11,7 +11,12 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.alept.exampletwo.MyApplication
 import com.alept.exampletwo.R
+import com.alept.exampletwo.database.AllAppsTable
+import com.alept.exampletwo.database.AppDatabase
 import com.alept.exampletwo.util.SharePreferences
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
 
 // screen which is shown when the app the blocked
@@ -23,15 +28,15 @@ class BlockedScreen : AppCompatActivity() {
     lateinit var tvSecond: TextView
     lateinit var tvBlockUnblock: TextView
     var timeValue :String =""
-
-
+    lateinit var appDatabase: AppDatabase
+    lateinit var appsTable: List<AllAppsTable>
     private lateinit var localBroadcastManager: LocalBroadcastManager
     private lateinit var countDownTimer: CountDownTimer
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_blocked_screen)
         localBroadcastManager = LocalBroadcastManager.getInstance(this)
-
+        appDatabase = AppDatabase.getInstance(this)!!
         initUI()
 
     }
@@ -45,7 +50,16 @@ class BlockedScreen : AppCompatActivity() {
         tvSecond = findViewById(R.id.tvSecond)
         tvBlockUnblock = findViewById(R.id.tvBlockUnblock)
 
+        GlobalScope.launch(Dispatchers.IO){
+            appsTable = appDatabase.AppDao().getApps()
+            launch(Dispatchers.Main){
 
+                if (appsTable.isNotEmpty()){
+
+                }
+            }
+
+        }
         buttonStart.setOnClickListener {
 
             if (mEditText.text.toString().isNotEmpty() && mEditText.text.toString().isNotBlank()) {
@@ -55,6 +69,15 @@ class BlockedScreen : AppCompatActivity() {
                 timeValue = mEditText.text.toString()
                 MyApplication().REMAINING_TIME = 0
                 SharePreferences(this).putString(SharePreferences.ALLOWED_TIME, "0")
+
+                GlobalScope.launch(Dispatchers.IO){
+                    if (appsTable.isEmpty() && ::appsTable.isInitialized) {
+                        appDatabase.AppDao().setIsBlock(AllAppsTable(""!!, ""!!, 0,0))
+
+                    } else {
+                        appDatabase.AppDao().setIsBlock(AllAppsTable(""!!, ""!!, 0,0))
+                    }
+                }
                 setBackResult()
             }
 

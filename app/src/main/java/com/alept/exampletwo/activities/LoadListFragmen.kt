@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.alept.exampletwo.adapter.AllAppsAdapter
+import com.alept.exampletwo.database.AppDatabase
 import com.alept.exampletwo.databinding.LoadlistFragmentBinding
 import com.alept.exampletwo.util.runOnUiThread
 import kotlinx.coroutines.Dispatchers
@@ -19,6 +20,7 @@ import kotlin.concurrent.thread
 
 class LoadListFragmen :Fragment() {
     lateinit var binding: LoadlistFragmentBinding
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -31,6 +33,7 @@ class LoadListFragmen :Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         binding.allAppRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         GlobalScope.launch(Dispatchers.IO) {
             val strings = ArrayList<String>()
@@ -40,7 +43,9 @@ class LoadListFragmen :Fragment() {
             val apps: List<ApplicationInfo> = requireContext().packageManager.getInstalledApplications(0)
             for (app in apps) {
                 if (requireContext().packageManager
-                        .getLaunchIntentForPackage(app.packageName) != null
+                        .getLaunchIntentForPackage(app.packageName) != null && !app.packageName.contains(
+                    "com.alept.exampletwo"
+                )
                 ) {
                     strings.add(i, requireContext().packageManager.getApplicationLabel(app).toString())
                     drawables.add(i,requireContext(). packageManager.getApplicationIcon(app))

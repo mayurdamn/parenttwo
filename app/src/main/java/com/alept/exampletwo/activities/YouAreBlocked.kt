@@ -36,8 +36,10 @@ class YouAreBlocked : AppCompatActivity() {
             }
         }
         closeImage.setOnClickListener {
-           // startActivity(Intent(this, AllAppsActivity::class.java))
+           //
             finish()
+            finishAffinity()
+            startActivity(Intent(this, AllAppsActivity::class.java))
         }
     }
 

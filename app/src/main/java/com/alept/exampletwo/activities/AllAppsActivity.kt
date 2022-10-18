@@ -16,8 +16,13 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import com.alept.exampletwo.MyApplication
 import com.alept.exampletwo.R
+import com.alept.exampletwo.database.AllAppsTable
+import com.alept.exampletwo.database.AppDatabase
 import com.alept.exampletwo.databinding.ActivityAllAppsBinding
 import com.alept.exampletwo.util.SharePreferences
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
 
 
@@ -25,13 +30,15 @@ class AllAppsActivity : AppCompatActivity() {
     lateinit var binding: ActivityAllAppsBinding
     private lateinit var countDownTimer: CountDownTimer
     var  fragment =Fragment();
-
+    lateinit var appDatabase: AppDatabase
+    lateinit var appsTable: List<AllAppsTable>
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityAllAppsBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
         fragment= LoadListFragmen()
+        appDatabase = AppDatabase.getInstance(this)!!
         checkPermissionFromUser()
        // binding.allAppRecyclerView.layoutManager = LinearLayoutManager(this)
        /* thread {
@@ -78,7 +85,16 @@ class AllAppsActivity : AppCompatActivity() {
             }
 
         }*/
+        GlobalScope.launch(Dispatchers.IO){
+            appsTable = appDatabase.AppDao().getApps()
+            launch(Dispatchers.Main){
 
+                if (appsTable.isNotEmpty()){
+
+                }
+            }
+
+        }
 
     }
 
@@ -196,7 +212,7 @@ class AllAppsActivity : AppCompatActivity() {
                     ))
                 )
                 binding.tvSecond.text = hms.toString()
-                //Log.e("Timer----->", hms.toString())
+                Log.e("Timer----->", hms.toString())
             }
 
             override fun onFinish() {
@@ -212,6 +228,15 @@ class AllAppsActivity : AppCompatActivity() {
                         YouAreBlocked::class.java
                     ).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 )*/
+                GlobalScope.launch(Dispatchers.IO){
+                    if (appsTable.isEmpty() && ::appsTable.isInitialized) {
+                        appDatabase.AppDao().setIsBlock(AllAppsTable(""!!, ""!!, 0,1))
+
+                    } else {
+                        appDatabase.AppDao().setIsBlock(AllAppsTable(""!!, ""!!, 0,1))
+
+                    }
+                }
             }
         }
         countDownTimer.start()

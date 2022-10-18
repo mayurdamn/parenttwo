@@ -11,12 +11,14 @@ class AllAppsTable {
     var appName : String
     var packageName : String
     var isBlocked : Int
+    var timerAllowed : Int = 2
 
     constructor(id: Int, appName: String, packageName: String, isBlocked: Int) {
         this.id = id
         this.appName = appName
         this.packageName = packageName
         this.isBlocked = isBlocked
+
     }
 
     @Ignore
@@ -24,7 +26,16 @@ class AllAppsTable {
         this.appName = appName
         this.packageName = packageName
         this.isBlocked = isBlocked
+
     }
+    @Ignore
+    constructor(appName: String, packageName: String, isBlocked: Int,timerAllowed:Int) {
+        this.appName = appName
+        this.packageName = packageName
+        this.isBlocked = isBlocked
+        this.timerAllowed= timerAllowed
+    }
+
 
 
 }

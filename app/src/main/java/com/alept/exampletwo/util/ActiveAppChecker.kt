@@ -42,19 +42,35 @@ class ActiveAppChecker : AccessibilityService() {
             TAG,
             "--Inside Accessiblity$runningPackName $source  ${className.toString()} ${eventType.toString()}"
         )*/
-        Log.e(
+       /* Log.e(
             TAG,
             "------>Time Start first,${MyApplication().REMAINING_TIME}")
         Log.e(
             TAG,
             "------>Time Start ${SharePreferences(this).getString(SharePreferences.ALLOWED_TIME)}")
-        MyApplication().REMAINING_TIME =SharePreferences(this).getString(SharePreferences.ALLOWED_TIME).toInt()
+        MyApplication().REMAINING_TIME =SharePreferences(this).getString(SharePreferences.ALLOWED_TIME).toInt()*/
 
         GlobalScope.launch(Dispatchers.IO){
             allAppsTable = appDatabase.AppDao().getApps()
 
             launch(Dispatchers.Main){
-                when (MyApplication().REMAINING_TIME) {
+                for (i in allAppsTable) {
+                    if(i.timerAllowed==0){
+                        Log.e(TAG, "--timerAllowed ${i.isBlocked}  ${i.timerAllowed}")
+                    }else{
+                        if (runningPackName.contains(i.packageName)) {
+                            if (i.isBlocked == 1) {
+
+                                Log.e(TAG, "--timerAllowed not ${i.isBlocked}${i.packageName}")
+
+                                blockApp(i.packageName, i.appName)
+                            }
+                        }
+                    }
+
+                }
+
+                /*when (MyApplication().REMAINING_TIME) {
                     1 -> {
                         isBlock = false
                         for (i in allAppsTable) {
@@ -86,7 +102,7 @@ class ActiveAppChecker : AccessibilityService() {
                         }
                     }
 
-                }
+                }*/
             }
         }
         /*thread {
