@@ -29,6 +29,7 @@ class ActiveAppChecker : AccessibilityService() {
 
     override fun onCreate() {
         super.onCreate()
+
     }
 
     override fun onAccessibilityEvent(p0: AccessibilityEvent?) {
@@ -41,17 +42,7 @@ class ActiveAppChecker : AccessibilityService() {
         val action: String = p0?.action.toString()
         val source: String = p0?.source.toString()
         val className: String = p0?.className.toString()
-        /* Log.e(
-             TAG,
-             "--Inside Accessiblity$runningPackName $source  ${className.toString()} ${eventType.toString()}"
-         )*/
-        /* Log.e(
-             TAG,
-             "------>Time Start first,${MyApplication().REMAINING_TIME}")
-         Log.e(
-             TAG,
-             "------>Time Start ${SharePreferences(this).getString(SharePreferences.ALLOWED_TIME)}")
-         MyApplication().REMAINING_TIME =SharePreferences(this).getString(SharePreferences.ALLOWED_TIME).toInt()*/
+
 
         GlobalScope.launch(Dispatchers.IO) {
             allAppsTable = appDatabase.AppDao().getApps()

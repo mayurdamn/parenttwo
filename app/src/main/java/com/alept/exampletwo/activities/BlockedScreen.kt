@@ -1,23 +1,32 @@
 package com.alept.exampletwo.activities
 
+import android.app.AlarmManager
+import android.app.PendingIntent
+import android.app.PendingIntent.FLAG_IMMUTABLE
+import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
+import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.alept.exampletwo.MyApplication
 import com.alept.exampletwo.R
 import com.alept.exampletwo.database.AddTimer
-import com.alept.exampletwo.database.AllAppsTable
 import com.alept.exampletwo.database.AppDatabase
+import com.alept.exampletwo.util.AlarmManagerSer
+import com.alept.exampletwo.util.MyAlarm
 import com.alept.exampletwo.util.SharePreferences
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import java.util.*
 import java.util.concurrent.TimeUnit
 
 // screen which is shown when the app the blocked
@@ -33,6 +42,7 @@ class BlockedScreen : AppCompatActivity() {
     lateinit var addTimer: List<AddTimer>
     private lateinit var localBroadcastManager: LocalBroadcastManager
     private lateinit var countDownTimer: CountDownTimer
+    lateinit var pendingIntent: PendingIntent
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_blocked_screen)
@@ -42,6 +52,7 @@ class BlockedScreen : AppCompatActivity() {
 
     }
 
+    @RequiresApi(Build.VERSION_CODES.M)
     private fun initUI() {
         buttonClose = findViewById(R.id.buttonClose)
         buttonStart = findViewById(R.id.buttonStart)
@@ -79,6 +90,36 @@ class BlockedScreen : AppCompatActivity() {
                         appDatabase.AppDao().setIsBlock(AddTimer( 0,0))
                     }
                 }
+
+                /*val myIntent = Intent(this@BlockedScreen, MyAlarm ::class.java)//.putExtra("somevalue",timeValue)
+                pendingIntent = PendingIntent.getService(this@BlockedScreen, 0, myIntent, FLAG_IMMUTABLE)
+                val alarmManager: AlarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
+                val calendar: Calendar = Calendar.getInstance()
+                calendar.timeInMillis = System.currentTimeMillis()
+                calendar.add(Calendar.SECOND, 3)
+                alarmManager.setRepeating(
+                    AlarmManager.RTC,
+                    timeValue.toLong() * 1000,
+                    AlarmManager.INTERVAL_DAY,
+                    pendingIntent
+                )
+                Toast.makeText(baseContext, "Starting Service Alarm", Toast.LENGTH_LONG).show()*/
+                val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
+
+// Intent part
+                val intent = Intent(this, MyAlarm::class.java)
+                intent.action = "FOO_ACTION"
+                intent.putExtra("KEY_FOO_STRING", "Medium AlarmManager Demo")
+
+                val pendingIntent = PendingIntent.getBroadcast(this, 0, intent, FLAG_IMMUTABLE)
+
+// Alarm time
+                val ALARM_DELAY_IN_SECOND = 10
+                val alarmTimeAtUTC = System.currentTimeMillis() + ALARM_DELAY_IN_SECOND * 1_000L
+
+// Set with system Alarm Service
+// Other possible functions: setExact() / setRepeating() / setWindow(), etc
+                alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, alarmTimeAtUTC, pendingIntent)
                 setBackResult()
             }
 

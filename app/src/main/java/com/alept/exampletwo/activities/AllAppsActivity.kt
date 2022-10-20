@@ -2,7 +2,11 @@ package com.alept.exampletwo.activities
 
 import android.app.Activity
 import android.app.AlertDialog
+import android.content.BroadcastReceiver
+import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
+import android.os.Build
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.provider.Settings
@@ -14,13 +18,20 @@ import androidx.activity.result.contract.ActivityResultContracts.StartActivityFo
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import androidx.work.ExistingWorkPolicy
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
 import com.alept.exampletwo.MyApplication
 import com.alept.exampletwo.R
 import com.alept.exampletwo.database.AddTimer
 import com.alept.exampletwo.database.AllAppsTable
 import com.alept.exampletwo.database.AppDatabase
 import com.alept.exampletwo.databinding.ActivityAllAppsBinding
+import com.alept.exampletwo.util.EndlessService
 import com.alept.exampletwo.util.SharePreferences
+import com.alept.exampletwo.util.TimerService
+import com.alept.exampletwo.util.WorkManagerTimer
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -163,6 +174,24 @@ class AllAppsActivity : AppCompatActivity() {
         resultLauncher.launch(intent)
     }
 
+    override fun onStart() {
+        super.onStart()
+        val intentFilter = IntentFilter()
+        intentFilter.addAction("com.extwo")
+        LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiver, intentFilter)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(broadcastReceiver)
+    }
+
+    private var broadcastReceiver: BroadcastReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent) {
+            val someValue = intent.getStringExtra("someName")
+           binding.tvSecond.text=someValue
+        }
+    }
 
     private var resultLauncher = registerForActivityResult(StartActivityForResult()) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
@@ -171,8 +200,26 @@ class AllAppsActivity : AppCompatActivity() {
             val timeInt = data?.getStringExtra("valueTimer").toString().toInt()
             MyApplication().REMAINING_TIME = 0
             SharePreferences(this).putString(SharePreferences.ALLOWED_TIME, "0")
-            startTimer(timeInt)
+            //startTimer(timeInt)
+           /* val uploadWorkRequest = OneTimeWorkRequestBuilder<WorkManagerTimer>().build()
+            WorkManager.getInstance(this).
+            enqueueUniqueWork(
+                "oneTimeTimer_${System.currentTimeMillis()}",
+                ExistingWorkPolicy.KEEP,
+                uploadWorkRequest)*/
 
+
+
+           /* Intent(this, EndlessService::class.java).also {
+               // it.action = action.name
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    Log.e("action","Starting the service in >=26 Mode")
+                    startForegroundService(it)
+                    return@also
+                }
+                Log.e("action","Starting the service in <26 Mode")
+                startService(it)
+            }*/
         }
     }
 
